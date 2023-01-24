@@ -6,18 +6,18 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-NS=idp
+NS=idp1201
 CHART_VERSION=12.0.1-B2
 COPY_UTIL=../copy_cm_func.sh
 
-IAMHOST_URL=$(kubectl get cm global -o jsonpath={.data.mosip-iam-external-host})
-PMS_CLIENT_PASSWORD=$( kubectl -n keycloak get secrets keycloak-client-secrets -o jsonpath={.data.mosip_pms_client_secret} | base64 -d )
-MPARTNER_DEFAULT_AUTH_CLIENT_PASSWORD=$( kubectl -n keycloak get secrets keycloak-client-secrets -o jsonpath={.data.mpartner_default_auth_secret} | base64 -d )
+IAMHOST_URL=$(kubectl get cm global1201 -o jsonpath={.data.mosip-iam-external-host})
+PMS_CLIENT_PASSWORD=$( kubectl -n keycloak1201 get secrets keycloak-client-secrets -o jsonpath={.data.mosip_pms_client_secret} | base64 -d )
+MPARTNER_DEFAULT_AUTH_CLIENT_PASSWORD=$( kubectl -n keycloak1201 get secrets keycloak-client-secrets -o jsonpath={.data.mpartner_default_auth_secret} | base64 -d )
 
 echo "Copying keycloak configmaps and secret"
-$COPY_UTIL configmap keycloak-host keycloak $NS
-$COPY_UTIL configmap keycloak-env-vars keycloak $NS
-$COPY_UTIL secret keycloak keycloak $NS
+$COPY_UTIL configmap keycloak-host keycloak1201 $NS
+$COPY_UTIL configmap keycloak-env-vars keycloak1201 $NS
+$COPY_UTIL secret keycloak keycloak1201 $NS
 
 echo "creating and adding roles to keycloak pms client for IDP"
 

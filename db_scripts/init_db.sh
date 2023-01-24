@@ -6,7 +6,7 @@ if [ $# -ge 1 ] ; then
   export KUBECONFIG=$1
 fi
 
-NS=idp
+NS=idp1201
 CHART_VERSION=12.0.1-B2
 
 helm repo add mosip https://mosip.github.io/mosip-helm
@@ -16,13 +16,13 @@ while true; do
     read -p "CAUTION: Do we already have Postgres installed? Also make sure the IDP DB is backed up as the same will be overriden. Do you still want to continue?" yn
     if [ $yn = "Y" ]
       then
-        DB_USER_PASSWORD=$( kubectl -n postgres get secrets db-common-secrets -o jsonpath={.data.db-dbuser-password} | base64 -d )
+        DB_USER_PASSWORD=$( kubectl -n postgres1201 get secrets db-common-secrets -o jsonpath={.data.db-dbuser-password} | base64 -d )
 
         echo Removing existing mosip_idp DB installation
         helm -n $NS delete postgres-init-idp
 
         echo Copy Postgres secrets
-        ./copy_cm_func.sh secret postgres-postgresql postgres $NS
+        ./copy_cm_func.sh secret postgres-postgresql postgres1201 $NS
 
         echo Initializing DB
         helm -n $NS install postgres-init-idp mosip/postgres-init -f init_values.yaml \
