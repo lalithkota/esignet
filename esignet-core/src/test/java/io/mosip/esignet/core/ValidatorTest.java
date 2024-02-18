@@ -355,35 +355,35 @@ public class ValidatorTest {
 	@Test
 	public void test_OtpChannelValidator_valid_thenPass() {
 		OtpChannelValidator validator = new OtpChannelValidator();
-		ReflectionTestUtils.setField(validator, "authenticationWrapper", authenticator);
+		ReflectionTestUtils.setField(validator, "authenticationWrappers", Arrays.asList(authenticator));
 		Assert.assertTrue(validator.isValid("email", null));
 	}
 
 	@Test
 	public void test_OtpChannelValidator_null_thenFail() {
 		OtpChannelValidator validator = new OtpChannelValidator();
-		ReflectionTestUtils.setField(validator, "authenticationWrapper", authenticator);
+		ReflectionTestUtils.setField(validator, "authenticationWrappers", Arrays.asList(authenticator));
 		Assert.assertFalse(validator.isValid(null, null));
 	}
 
 	@Test
 	public void test_OtpChannelValidator_invalid_thenFail() {
 		OtpChannelValidator validator = new OtpChannelValidator();
-		ReflectionTestUtils.setField(validator, "authenticationWrapper", authenticator);
+		ReflectionTestUtils.setField(validator, "authenticationWrappers", Arrays.asList(authenticator));
 		Assert.assertFalse(validator.isValid("mobile", null));
 	}
 
 	@Test
 	public void test_OtpChannelValidator_blank_thenFail() {
 		OtpChannelValidator validator = new OtpChannelValidator();
-		ReflectionTestUtils.setField(validator, "authenticationWrapper", authenticator);
+		ReflectionTestUtils.setField(validator, "authenticationWrappers", Arrays.asList(authenticator));
 		Assert.assertFalse(validator.isValid("   ", null));
 	}
 
 	@Test
 	public void test_OtpChannelValidator_spaceAppended_thenFail() {
 		OtpChannelValidator validator = new OtpChannelValidator();
-		ReflectionTestUtils.setField(validator, "authenticationWrapper", authenticator);
+		ReflectionTestUtils.setField(validator, "authenticationWrappers", Arrays.asList(authenticator));
 		Assert.assertFalse(validator.isValid("   email ", null));
 	}
 

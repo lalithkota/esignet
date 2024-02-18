@@ -21,6 +21,7 @@ public class OIDCTransaction implements Serializable {
 
     String clientId;
     String relyingPartyId;
+    String authenticatorName;
     String redirectUri;
     Claims requestedClaims;
     List<String> essentialClaims;

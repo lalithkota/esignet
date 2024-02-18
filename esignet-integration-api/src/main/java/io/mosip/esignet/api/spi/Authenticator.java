@@ -22,6 +22,11 @@ import io.mosip.esignet.api.exception.SendOtpException;
 public interface Authenticator {
 
     /**
+     * Get name of the authenticator
+     */
+    String getName();
+
+    /**
      * Delegate request to authenticate the user, and get KYC token
      * @param relyingPartyId relying Party (RP) ID. This ID will be provided during partner self registration process
      * @param clientId OIDC client Id. Auto generated while creating OIDC client in PMS

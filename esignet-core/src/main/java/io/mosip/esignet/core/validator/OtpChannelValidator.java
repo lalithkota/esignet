@@ -4,6 +4,8 @@ import io.mosip.esignet.api.spi.Authenticator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -12,10 +14,16 @@ import javax.validation.ConstraintValidatorContext;
 public class OtpChannelValidator implements ConstraintValidator<OtpChannel, String> {
 
     @Autowired
-    private Authenticator authenticationWrapper;
+    private List<Authenticator> authenticationWrappers;
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return authenticationWrapper.isSupportedOtpChannel(s);
+        // TODO: Validate based on the authenticator.
+        // For now this validates against all authenticator backends.
+        boolean valid = true;
+        for (Authenticator authenticator: authenticationWrappers){
+            valid &= authenticator.isSupportedOtpChannel(s);
+        }
+        return valid;
     }
 }

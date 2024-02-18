@@ -16,10 +16,12 @@ import io.mosip.esignet.api.util.Action;
 import io.mosip.esignet.api.util.ActionStatus;
 import io.mosip.esignet.core.constants.Constants;
 import io.mosip.esignet.core.constants.ErrorConstants;
+import io.mosip.esignet.core.dto.ClientDetail;
 import io.mosip.esignet.core.dto.vci.*;
 import io.mosip.esignet.core.exception.EsignetException;
 import io.mosip.esignet.core.exception.InvalidRequestException;
 import io.mosip.esignet.core.exception.NotAuthenticatedException;
+import io.mosip.esignet.core.spi.ClientManagementService;
 import io.mosip.esignet.core.spi.VCIssuanceService;
 import io.mosip.esignet.core.util.AuditHelper;
 import io.mosip.esignet.core.util.SecurityHelperService;
@@ -55,7 +57,7 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
     private ParsedAccessToken parsedAccessToken;
 
     @Autowired
-    private VCIssuancePlugin vcIssuancePlugin;
+    private List<VCIssuancePlugin> vcIssuancePlugins;
 
     @Autowired
     private ProofValidatorFactory proofValidatorFactory;
@@ -65,6 +67,9 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
 
     @Autowired
     private SecurityHelperService securityHelperService;
+
+    @Autowired
+    private ClientManagementService clientManagementService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -115,8 +120,31 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
         return issuerMetadata;
     }
 
+    private VCIssuancePlugin getVcPluginByName(String name){
+        if (name != null && !name.isBlank()){
+            for (VCIssuancePlugin vcPlugin: vcIssuancePlugins){
+                if (name.equals(vcPlugin.getName())){
+                    return vcPlugin;
+                }
+            }
+        }
+        // Return the first vc plugin by default
+        // TODO: change the default vc plugin logic
+        return vcIssuancePlugins.get(0);
+    }
+
+    private VCIssuancePlugin getVcPluginByClientId(String clientId){
+        String vcIssuerName = null;
+        if (clientManagementService != null && clientId != null && !clientId.isBlank()){
+            ClientDetail clientDetail = clientManagementService.getClientDetails(clientId);
+            vcIssuerName = clientDetail.getVcIssuerName();
+        }
+        return getVcPluginByName(vcIssuerName);
+    }
+
     private VCResult<?> getVerifiableCredential(CredentialRequest credentialRequest, CredentialMetadata credentialMetadata,
                                                 String holderId) {
+        VCIssuancePlugin vcIssuancePlugin = getVcPluginByClientId((String) parsedAccessToken.getClaims().get(CLIENT_ID));
         parsedAccessToken.getClaims().put("accessTokenHash", parsedAccessToken.getAccessTokenHash());
         VCRequestDto vcRequestDto = new VCRequestDto();
         vcRequestDto.setFormat(credentialRequest.getFormat());

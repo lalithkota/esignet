@@ -21,11 +21,13 @@ import io.mosip.kernel.core.keymanager.spi.KeyStore;
 import io.mosip.kernel.keymanagerservice.entity.KeyAlias;
 import io.mosip.kernel.keymanagerservice.helper.KeymanagerDBHelper;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -68,6 +70,12 @@ public class AuthorizationHelperServiceTest {
 
     @Mock
     private CaptchaValidator captchaValidator;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrappers", Arrays.asList(authenticationWrapper));
+    }
 
     @Test
     public void validateCaptchaToken_withNoValidator_thenFail() {

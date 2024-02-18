@@ -16,6 +16,11 @@ import java.util.Map;
 public class TestVCIPluginImpl implements VCIssuancePlugin {
 
     @Override
+    public String getName(){
+        return "test-mock-vc";
+    }
+
+    @Override
     public VCResult<JsonLDObject> getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId,
                                                                              Map<String, Object> identityDetails) {
         return new VCResult<>();

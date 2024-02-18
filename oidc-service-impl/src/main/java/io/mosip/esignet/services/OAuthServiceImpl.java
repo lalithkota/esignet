@@ -52,7 +52,7 @@ public class OAuthServiceImpl implements OAuthService {
     private AuthorizationHelperService authorizationHelperService;
 
     @Autowired
-    private Authenticator authenticationWrapper;
+    private List<Authenticator> authenticationWrappers;
 
     @Autowired
     private TokenService tokenService;
@@ -121,20 +121,23 @@ public class OAuthServiceImpl implements OAuthService {
             }
         });
 
-        try {
-            List<KycSigningCertificateData> allAuthCerts = authenticationWrapper.getAllKycSigningCertificates();
-            if(allAuthCerts != null) {
-                allAuthCerts.stream().forEach( authCert -> {
-                    try {
-                        jwkList.add(getJwk(authCert.getKeyId(), authCert.getCertificateData(), authCert.getExpiryAt()));
-                    } catch (JOSEException e) {
-                        log.error("Failed to parse the auth certificate data", e);
-                    }
-                });
-            }
-        } catch (KycSigningCertificateException e) {
-            log.error("Failed to fetch authenticator certificate data", e);
-        }
+        authenticationWrappers.stream()
+            .map(authenticationWrapper -> {
+                try {
+                    return authenticationWrapper.getAllKycSigningCertificates();
+                } catch (KycSigningCertificateException e) {
+                    log.error("Failed to fetch authenticator certificate data", e);
+                    return Collections.<KycSigningCertificateData>emptyList();
+                }
+            })
+            .flatMap(Collection::stream)
+            .forEach(authCert -> {
+                try {
+                    jwkList.add(getJwk(authCert.getKeyId(), authCert.getCertificateData(), authCert.getExpiryAt()));
+                } catch (JOSEException e) {
+                    log.error("Failed to parse the auth certificate data", e);
+                }
+            });
 
         Map<String, Object> response = new HashMap<>();
         response.put("keys", jwkList);
@@ -239,6 +242,7 @@ public class OAuthServiceImpl implements OAuthService {
 
     private KycExchangeResult doKycExchange(OIDCTransaction transaction) {
         KycExchangeResult kycExchangeResult;
+        Authenticator authenticationWrapper = AuthorizationHelperService.getAuthenticatorByName(authenticationWrappers, transaction.getAuthenticatorName());
         try {
             KycExchangeDto kycExchangeDto = new KycExchangeDto();
             kycExchangeDto.setTransactionId(transaction.getAuthTransactionId());

@@ -15,6 +15,11 @@ import java.util.Map;
 public interface VCIssuancePlugin {
 
     /**
+     * Get name of the vc plugin
+     */
+    String getName();
+
+    /**
      * Applicable for formats : ldp_vc
      * @param vcRequestDto
      * @param holderId Holders key material as either DID / KID. This should be used for cryptographic binding of the VC

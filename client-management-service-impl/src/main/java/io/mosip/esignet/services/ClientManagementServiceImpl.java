@@ -184,6 +184,8 @@ public class ClientManagementServiceImpl implements ClientManagementService {
         dto.setLogoUri(result.get().getLogoUri());
         dto.setStatus(result.get().getStatus());
         dto.setPublicKey(result.get().getPublicKey());
+        dto.setAuthenticatorName(result.get().getAuthenticatorName());
+        dto.setVcIssuerName(result.get().getVcIssuerName());
         TypeReference<List<String>> typeReference = new TypeReference<List<String>>() {};
         try {
             if(result.get().getClaims() != null)

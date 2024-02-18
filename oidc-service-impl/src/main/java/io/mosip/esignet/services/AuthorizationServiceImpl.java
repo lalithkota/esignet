@@ -11,7 +11,6 @@ import io.mosip.esignet.api.dto.Claims;
 import io.mosip.esignet.api.dto.KycAuthResult;
 import io.mosip.esignet.api.dto.SendOtpResult;
 import io.mosip.esignet.api.spi.AuditPlugin;
-import io.mosip.esignet.api.spi.Authenticator;
 import io.mosip.esignet.api.util.Action;
 import io.mosip.esignet.api.util.ActionStatus;
 import io.mosip.esignet.api.util.ConsentAction;
@@ -47,9 +46,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Autowired
     private ClientManagementService clientManagementService;
-
-    @Autowired
-    private Authenticator authenticationWrapper;
 
     @Autowired
     private CacheUtilService cacheUtilService;
@@ -177,6 +173,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         oidcTransaction.setLinkCodeQueue(new LinkCodeQueue(2));
         oidcTransaction.setCurrentLinkCodeLimit(linkCodeLimitPerTransaction);
         oidcTransaction.setRequestedCredentialScopes(authorizationHelperService.getCredentialScopes(oauthDetailReqDto.getScope()));
+        oidcTransaction.setAuthenticatorName(clientDetailDto.getAuthenticatorName());
         return Pair.of(oAuthDetailResponse, oidcTransaction);
     }
 

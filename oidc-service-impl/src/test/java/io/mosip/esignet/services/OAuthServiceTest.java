@@ -22,11 +22,13 @@ import io.mosip.kernel.keymanagerservice.dto.AllCertificatesDataResponseDto;
 import io.mosip.kernel.keymanagerservice.dto.CertificateDataResponseDto;
 import io.mosip.kernel.keymanagerservice.service.KeymanagerService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -68,6 +70,14 @@ public class OAuthServiceTest {
 
     @Mock
     private SecurityHelperService securityHelperService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        List<Authenticator> authenticators = Arrays.asList(authenticationWrapper);
+        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrappers", authenticators);
+        ReflectionTestUtils.setField(oAuthService, "authenticationWrappers", authenticators);
+    }
 
     @Test
     public void getTokens_withValidRequest_thenPass() throws KycExchangeException {

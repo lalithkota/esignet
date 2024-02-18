@@ -79,7 +79,11 @@ public class VCIssuanceServiceTest {
             @Override
             public void logAudit(String username, Action action, ActionStatus status, AuditDTO audit, Throwable t) {}
         });
-        ReflectionTestUtils.setField(vcIssuanceService, "vcIssuancePlugin", new VCIssuancePlugin() {
+        ReflectionTestUtils.setField(vcIssuanceService, "vcIssuancePlugins", Arrays.asList(new VCIssuancePlugin() {
+            @Override
+            public String getName() {
+                return "test-mock-vc";
+            }
             @Override
             public VCResult<JsonLDObject> getVerifiableCredentialWithLinkedDataProof(VCRequestDto vcRequestDto, String holderId, Map<String, Object> identityDetails) {
                 vcResult = new VCResult<>();
@@ -95,7 +99,7 @@ public class VCIssuanceServiceTest {
                 vcResult_jwt.setFormat("jwt_vc_json-ld");
                 return vcResult_jwt;
             }
-        });
+        }));
 
         Map<String, Object> issuerMetadata = new HashMap<>();
         issuerMetadata.put("credential_issuer", "https://localhost:9090");

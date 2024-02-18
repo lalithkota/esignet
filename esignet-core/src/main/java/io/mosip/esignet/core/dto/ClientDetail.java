@@ -17,6 +17,8 @@ public class ClientDetail implements Serializable {
     private String id;
     private Map<String, String> name;
     private String rpId;
+    private String authenticatorName;
+    private String vcIssuerName;
     private String logoUri;
     private List<String> redirectUris;
     private String publicKey;

@@ -73,4 +73,10 @@ public class ClientDetail {
 
     @Column(name = "upd_dtimes")
     private LocalDateTime updatedtimes;
+
+    @Column(name = "authenticator_name")
+    private String authenticatorName;
+
+    @Column(name = "vc_issuer_name")
+    private String vcIssuerName;
 }

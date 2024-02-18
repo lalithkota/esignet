@@ -80,10 +80,12 @@ public class LinkedAuthorizationServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrappers", Arrays.asList(authenticationWrapper));
+
         AuthorizationHelperService authorizationHelperService = new AuthorizationHelperService();
         ReflectionTestUtils.setField(authorizationHelperService, "authorizeScopes", Arrays.asList("resident-service"));
         ReflectionTestUtils.setField(authorizationHelperService, "authenticationContextClassRefUtil", authenticationContextClassRefUtil);
-        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrapper", authenticationWrapper);
+        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrappers", Arrays.asList(authenticationWrapper));
         ReflectionTestUtils.setField(authorizationHelperService, "auditWrapper", auditWrapper);
         ReflectionTestUtils.setField(authorizationHelperService, "cacheUtilService", cacheUtilService);
 

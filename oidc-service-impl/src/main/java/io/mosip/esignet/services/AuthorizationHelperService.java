@@ -59,7 +59,7 @@ public class AuthorizationHelperService {
     private AuthenticationContextClassRefUtil authenticationContextClassRefUtil;
 
     @Autowired
-    private Authenticator authenticationWrapper;
+    private List<Authenticator> authenticationWrappers;
 
     @Autowired
     private CacheUtilService cacheUtilService;
@@ -112,13 +112,25 @@ public class AuthorizationHelperService {
             throw new EsignetException(ErrorConstants.INVALID_CAPTCHA);
     }
 
-
     protected void addEntryInLinkStatusDeferredResultMap(String key, DeferredResult deferredResult) {
         LINK_STATUS_DEFERRED_RESULT_MAP.put(key, deferredResult);
     }
 
     protected void addEntryInLinkAuthCodeStatusDeferredResultMap(String key, DeferredResult deferredResult) {
         LINK_AUTH_CODE_STATUS_DEFERRED_RESULT_MAP.put(key, deferredResult);
+    }
+
+    public static Authenticator getAuthenticatorByName(List<Authenticator> authenticators, String name){
+        if (name != null && !name.isBlank()){
+            for (Authenticator authenticator: authenticators){
+                if (name.equals(authenticator.getName())){
+                    return authenticator;
+                }
+            }
+        }
+        // Return the first authenticator by default
+        // TODO: change the default authenticator logic
+        return authenticators.get(0);
     }
 
     @KafkaListener(id = "link-status-consumer", autoStartup = "true", topics = "${mosip.esignet.kafka.linked-session.topic}")
@@ -181,6 +193,7 @@ public class AuthorizationHelperService {
     protected KycAuthResult delegateAuthenticateRequest(String transactionId, String individualId,
                                                         List<AuthChallenge> challengeList, OIDCTransaction transaction) {
         KycAuthResult kycAuthResult;
+        Authenticator authenticationWrapper = getAuthenticatorByName(authenticationWrappers, transaction.getAuthenticatorName());
         try {
             kycAuthResult = authenticationWrapper.doKycAuth(transaction.getRelyingPartyId(), transaction.getClientId(),
                     new KycAuthDto(transaction.getAuthTransactionId(), individualId, challengeList));
@@ -249,6 +262,7 @@ public class AuthorizationHelperService {
 
     protected SendOtpResult delegateSendOtpRequest(OtpRequest otpRequest, OIDCTransaction transaction) {
         SendOtpResult sendOtpResult;
+        Authenticator authenticationWrapper = getAuthenticatorByName(authenticationWrappers, transaction.getAuthenticatorName());
         try {
             SendOtpDto sendOtpDto = new SendOtpDto();
             sendOtpDto.setTransactionId(transaction.getAuthTransactionId());

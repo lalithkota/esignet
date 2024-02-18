@@ -56,7 +56,6 @@ import static io.mosip.esignet.api.util.ErrorConstants.SEND_OTP_FAILED;
 import static io.mosip.esignet.core.constants.ErrorConstants.INVALID_INPUT;
 import static io.mosip.esignet.core.util.IdentityProviderUtil.ALGO_SHA3_256;
 
-@ConditionalOnProperty(value = "mosip.esignet.integration.authenticator", havingValue = "TestAuthenticationService")
 @Component
 @Slf4j
 public class TestAuthenticationService implements Authenticator {
@@ -122,6 +121,11 @@ public class TestAuthenticationService implements Authenticator {
 
         policyContextMap = new HashMap<>();
         relyingPartyPublicKeys = new HashMap<>();
+    }
+
+    @Override
+    public String getName(){
+        return "test-mock-auth";
     }
 
     @PostConstruct

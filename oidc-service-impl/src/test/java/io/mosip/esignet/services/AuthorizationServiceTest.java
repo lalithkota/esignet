@@ -74,7 +74,7 @@ public class AuthorizationServiceTest {
         ReflectionTestUtils.setField(authorizationHelperService, "credentialScopes", Arrays.asList("sample_ldp_vc"));
         ReflectionTestUtils.setField(authorizationHelperService, "authorizeScopes", Arrays.asList("resident-service"));
         ReflectionTestUtils.setField(authorizationHelperService, "authenticationContextClassRefUtil", authenticationContextClassRefUtil);
-        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrapper", authenticationWrapper);
+        ReflectionTestUtils.setField(authorizationHelperService, "authenticationWrappers", Arrays.asList(authenticationWrapper));
         ReflectionTestUtils.setField(authorizationHelperService, "auditWrapper", auditWrapper);
 
         ReflectionTestUtils.setField(authorizationServiceImpl, "claims", claims);
