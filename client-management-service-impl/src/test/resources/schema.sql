@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS client_detail(
     	name character varying(256) NOT NULL,
     	rp_id character varying(50) NOT NULL,
     	authenticator_name character varying,
-    	vc_issuer_name character varying,
     	logo_uri character varying(1024) NOT NULL,
     	redirect_uris character varying NOT NULL,
     	claims character varying NOT NULL,

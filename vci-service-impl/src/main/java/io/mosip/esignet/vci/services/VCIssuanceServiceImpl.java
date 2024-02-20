@@ -53,6 +53,12 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
     @Value("${mosip.esignet.cnonce-expire-seconds:300}")
     private int cNonceExpireSeconds;
 
+    @Value("#{${mosip.esignet.supported.credential.scopes}}")
+    private List<String> credentialScopes;
+
+    @Value("#{${mosip.esignet.credential.scope-plugin-list}}")
+    private List<String> credentialPluginList;
+
     @Autowired
     private ParsedAccessToken parsedAccessToken;
 
@@ -67,9 +73,6 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
 
     @Autowired
     private SecurityHelperService securityHelperService;
-
-    @Autowired
-    private ClientManagementService clientManagementService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -133,18 +136,19 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
         return vcIssuancePlugins.get(0);
     }
 
-    private VCIssuancePlugin getVcPluginByClientId(String clientId){
-        String vcIssuerName = null;
-        if (clientManagementService != null && clientId != null && !clientId.isBlank()){
-            ClientDetail clientDetail = clientManagementService.getClientDetails(clientId);
-            vcIssuerName = clientDetail.getVcIssuerName();
+    private VCIssuancePlugin getVcPluginByScope(String scope){
+        String pluginName = null;
+        if (credentialPluginList != null && !credentialPluginList.isEmpty() && credentialScopes != null && !credentialScopes.isEmpty()){
+            int scopeIndex = credentialScopes.indexOf(scope);
+            if (scopeIndex < 0) scopeIndex = 0;
+            pluginName = credentialPluginList.get(scopeIndex);
         }
-        return getVcPluginByName(vcIssuerName);
+        return getVcPluginByName(pluginName);
     }
 
     private VCResult<?> getVerifiableCredential(CredentialRequest credentialRequest, CredentialMetadata credentialMetadata,
                                                 String holderId) {
-        VCIssuancePlugin vcIssuancePlugin = getVcPluginByClientId((String) parsedAccessToken.getClaims().get(CLIENT_ID));
+        VCIssuancePlugin vcIssuancePlugin = getVcPluginByScope((String) parsedAccessToken.getClaims().getOrDefault("scope", ""));
         parsedAccessToken.getClaims().put("accessTokenHash", parsedAccessToken.getAccessTokenHash());
         VCRequestDto vcRequestDto = new VCRequestDto();
         vcRequestDto.setFormat(credentialRequest.getFormat());

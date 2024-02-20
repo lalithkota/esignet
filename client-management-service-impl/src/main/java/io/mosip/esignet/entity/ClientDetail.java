@@ -76,7 +76,4 @@ public class ClientDetail {
 
     @Column(name = "authenticator_name")
     private String authenticatorName;
-
-    @Column(name = "vc_issuer_name")
-    private String vcIssuerName;
 }
