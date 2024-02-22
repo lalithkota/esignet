@@ -78,6 +78,8 @@ public class OAuthServiceImpl implements OAuthService {
     @Value("#{${mosip.esignet.oauth.key-values}}")
     private Map<String, Object> oauthServerDiscoveryMap;
 
+    @Value("${mosip.esignet.oauth.enable-kyc-exchange-for-credentials:false}")
+    private boolean enableKycExchangeForCredentials;
 
     @Override
     public TokenResponse getTokens(TokenRequest tokenRequest) throws EsignetException {
@@ -92,7 +94,7 @@ public class OAuthServiceImpl implements OAuthService {
         authenticateClient(tokenRequest, clientDetailDto);
 
         boolean isTransactionVCScoped = isTransactionVCScoped(transaction);
-        if(!isTransactionVCScoped) { //if transaction is not VC scoped, only then do KYC exchange
+        if(enableKycExchangeForCredentials || !isTransactionVCScoped) { //if transaction is not VC scoped, only then do KYC exchange
             KycExchangeResult kycExchangeResult = doKycExchange(transaction);
             transaction.setEncryptedKyc(kycExchangeResult.getEncryptedKyc());
             auditWrapper.logAudit(Action.DO_KYC_EXCHANGE, ActionStatus.SUCCESS, AuditHelper.buildAuditDto(transaction.getTransactionId(), transaction), null);
